@@ -1,0 +1,46 @@
+module top_module(
+    input clk,
+    input in,
+    input reset,    // Synchronous reset
+    output done
+); 
+    
+    reg [3:0] state,next_state;
+    localparam IDLE= 4'd0, d1 = 4'd1 ,d2 =4'd2 ,d3 =4'd3 ,d4 =4'd4 ,d5 =4'd5,d6= 4'd6,d7 =4'd7, d8 = 4'd8, DONE = 4'd9,STOP =4'd10,
+    		   WAIT = 4'd11;
+    
+    always@(*)
+			begin
+                case(state)
+                    IDLE : next_state <= (in)? IDLE : d1;
+                    d1   : next_state <= d2;
+                    d2   : next_state <= d3;
+                    d3   : next_state <= d4;
+                    d4   : next_state <= d5;
+                    d5   : next_state <= d6;
+                    d6   : next_state <= d7;
+                    d7   : next_state <= d8;
+                    d8   : next_state <= WAIT;
+                    WAIT :
+                         begin
+                            next_state <= (in)? DONE :STOP ;
+                        end
+                    STOP : next_state <= (in)? IDLE : STOP;
+                    DONE : next_state <= (in)? IDLE : d1;
+                endcase
+        end
+    
+    always@(posedge clk)
+        begin
+            if(reset)
+                begin 
+                    state <= IDLE;
+                end
+            else
+                begin
+                    state <= next_state;
+                end
+        end
+    assign done = (state == DONE);
+
+endmodule

@@ -1,0 +1,75 @@
+module top_module(
+    input clk,
+    input in,
+    input reset,    // Synchronous reset
+    output [7:0] out_byte,
+    output done
+); //
+
+    reg [3:0] state;
+    localparam IDLE= 4'd0, d1 = 4'd1 ,d2 =4'd2 ,d3 =4'd3 ,d4 =4'd4 ,d5 =4'd5,d6= 4'd6,d7 =4'd7, d8 = 4'd8, DONE = 4'd9,STOP =4'd10,
+    		   WAIT = 4'd11;
+    reg [7:0] data ;
+    
+    always @(posedge clk)
+        begin
+          if(reset)
+          begin
+          state <= IDLE;
+          end  
+          else
+          begin
+            case(state)
+            IDLE : 
+                        begin
+                            state <= (in)? IDLE : d1;
+                            data <= 8'd0;
+                        end
+                    d1   : 
+                        begin
+                            state <= d2;
+                            data <= {in,data[7:1]};
+                        end
+                    d2   : begin
+                            state <= d3;
+                            data <= {in,data[7:1]};
+                        end
+                    d3   : begin
+                            state <= d4;
+                            data <= {in,data[7:1]};
+                        end
+                    d4   : begin
+                            state <= d5;
+                            data <= {in,data[7:1]};
+                        end
+                    d5   : begin
+                            state <= d6;
+                            data <= {in,data[7:1]};
+                        end
+                    d6   : begin
+                            state <= d7;
+                            data <= {in,data[7:1]};
+                        end
+                    d7   : begin
+                            state <= d8;
+                            data <= {in,data[7:1]};
+                        end
+                    d8   : begin
+                            state <= WAIT;
+                            data <= {in,data[7:1]};
+                        end
+                    WAIT :
+                         begin
+                            state <= (in)? DONE :STOP ;
+                        end
+                    STOP : state <= (in)? IDLE : STOP;
+                    DONE : state <= (in)? IDLE : d1;
+                endcase
+          end
+        end
+        
+        
+    assign done = (state == DONE);
+   // assign out_byte = (done)? data: 'd0;
+	assign out_byte = (state == DONE)? data : 8'b0 ;
+endmodule

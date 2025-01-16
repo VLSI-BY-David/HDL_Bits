@@ -1,0 +1,27 @@
+module top_module (
+    input clk,
+    input [2:0] y,
+    input x,
+    output Y0,
+    output z
+);
+
+    localparam [2:0]  A= 'd0, B='d1, C= 'd2,D= 'd3 , E= 'd4;
+    reg [2:0] state ;
+    
+    always @(y)
+        begin
+            case (y)
+                 A: state <= (x)? B:A;
+                 B: state <= (x)? E:B;
+                 C: state <= (x)? B:C;
+                 D: state <= (x)? C:B;
+                 E: state <= (x)? E:D;
+            endcase
+        end
+            
+    
+    assign z = (y == D || y == E );
+    assign Y0 = state[0];
+            
+endmodule

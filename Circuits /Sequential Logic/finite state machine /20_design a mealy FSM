@@ -1,0 +1,52 @@
+module top_module (
+    input clk,
+    input aresetn,    // Asynchronous active-low reset
+    input x,
+    output z ); 
+
+    reg [2:0] state , next  ;
+    localparam IDLE = 'd0,		// 
+    		   S1   = 'd1,      // 1 detected
+    		   S2   = 'd2;      // 10 detected
+    always@(posedge clk or negedge aresetn)
+        begin
+            if(!aresetn)
+                state <= IDLE ;
+            else
+                begin
+                    state <= next;
+                end
+        end
+    
+    always@*
+        begin
+            case (state)
+                        IDLE:
+                            begin
+                                next <= (x)? S1:IDLE;
+                                z <= 1'b0;
+                            end
+                        S1  :
+                            begin
+                                next <= (x)? S1 : S2;
+                                z <= 1'b0;
+                            end
+                        S2  :
+                            begin
+                                if(x)
+                                    begin
+                                        next <= S1;
+                                        z <= 1'b1 ;
+                                    end
+                                else
+                                    begin
+                                        next <= IDLE ;
+                                        z <= 1'b0;
+                                    end
+                            end
+                    endcase
+        end
+    
+    
+                                
+endmodule

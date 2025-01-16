@@ -1,0 +1,39 @@
+module top_module (
+    input clk,
+    input areset,
+    input x,
+    output z
+); 
+    
+    localparam [1:0] IDLE = 'd0,
+    				 s1   = 'd1,
+    				 s2   = 'd2;
+    reg [1:0] state ;
+    
+    always@(posedge clk or posedge areset)
+        begin
+            if(areset)
+                state <= IDLE;
+            else
+                begin
+                    case (state)
+                        IDLE :
+                            begin
+                                state <= (x)? s1: IDLE;
+                            end
+                        s1  :
+                            begin
+                                state <= (x)? s2: s1;
+                            end
+                        s2 :
+                            begin
+                                state <= (x)? s2: s1;
+                            end
+                    endcase
+                end
+        end
+    
+    assign z = (state == s1);
+                            
+
+endmodule

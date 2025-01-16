@@ -1,0 +1,67 @@
+module top_module (
+    input clk,
+    input resetn,    // active-low synchronous reset
+    input x,
+    input y,
+    output f,
+    output g
+); 
+
+    reg [3:0] state;
+    localparam A ='d0,B ='d1,C ='d2,D ='d3,E ='d4,F ='d5,G ='d6,H = 'd7,IDLE = 'd8;
+    
+    always@(posedge clk)
+        begin
+            if(~resetn)
+            	begin
+                    state <= IDLE;
+                    g <= 1'b0;
+                end
+             else
+                 begin
+                     case (state )
+                         IDLE  : state <= A;
+                         A : state <= B;
+                         B : state <= (x)? C : B;
+                         C : state <= (x)? C : D;
+                         D : 
+                             begin
+                                 if(x) 
+                                     begin 
+                                         state <= E;
+                                         g <= 1'b1;
+                                     end
+                                 else
+                                     state <= B;
+                             end
+                         E : 
+                             begin
+                                 if(y)
+                                     begin
+                                         g = 1'b1;
+                                         state <= H;
+                                     end
+                                 else
+                                     state <= F;
+                             end
+                         F : 
+                             begin
+                                 if(y)
+                                     begin
+                                         g=1'b1;
+                                         state <= H;
+                                     end
+                                 else
+                                     begin
+                                         g <= 1'b0;
+                                         state <= G;
+                                     end
+                             end
+                         G : g <= 1'b0;
+                         H : g <= 1'b1;
+                        
+                     endcase
+                 end
+        end
+    assign f = (state == A);
+endmodule

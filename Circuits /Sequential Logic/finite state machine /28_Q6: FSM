@@ -1,0 +1,29 @@
+module top_module (
+    input clk,
+    input reset,     // synchronous reset
+    input w,
+    output z);
+    
+    reg [2:0] state ;
+    localparam A = 'd0 ,B = 'd1 , C = 'd2 ,D = 'd3 , E= 'd4, F = 'd5;
+    
+    always@(posedge clk)
+        begin
+            if(reset)
+                state <= A ;
+            else
+                begin
+                    case(state)
+                        A : state <= (w)? A : B;
+                        B : state <= (w)? D : C;
+                        C : state <= (w)? D : E;
+                        D : state <= (w)? A : F;
+                        E : state <= (w)? D : E;
+                        F : state <= (w)? D : C;
+                    endcase
+                end
+        end
+    
+    assign z = (state == E || state == F);
+    
+endmodule

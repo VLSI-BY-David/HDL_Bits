@@ -1,0 +1,77 @@
+module top_module(
+    input clk,
+    input reset,    // Synchronous reset
+    input in,
+    output disc,
+    output flag,
+    output err);
+
+    localparam [3:0] NONE = 0,
+					 ONE  = 1,
+					 TWO  = 2,
+					 THREE= 3,
+					 FOUR = 4,
+					 FIVE = 5,
+					 SIX  = 6,
+					 DISC = 7,
+					 FLAG = 8,
+					 ERR  = 9;
+    reg [3:0] state;
+    
+    always@(posedge clk)
+        begin
+            if(reset)
+                begin
+                    state <= NONE;
+                end
+            else
+                begin 
+                    case(state)
+                        NONE :
+                             begin 
+                                 state <= (in)? ONE :NONE ;
+                             end
+                        ONE : 
+                            begin
+                                state <= (in)? TWO :NONE;
+                            end
+                        TWO : 
+                            begin
+                                state <= (in)? THREE :NONE;
+                            end
+                        THREE : 
+                            begin
+                                state <= (in)? FOUR :NONE;
+                            end
+                        FOUR : 
+                            begin
+                                state <= (in)? FIVE :NONE;
+                            end
+                        FIVE : 
+                            begin
+                                state <= (in)? SIX :DISC;
+                            end
+                        SIX : 
+                            begin
+                                state <= (in)? ERR :FLAG;
+                            end
+                        DISC :
+                            begin
+                                state <= (in)? ONE :NONE;
+                            end
+                        FLAG :
+                            begin
+                                state <= (in)? ONE :NONE;
+                            end
+                        ERR :
+                            begin
+                                state <= (in)? ERR :NONE;
+                            end
+                    endcase
+                end
+        end
+    
+    assign disc = (state == DISC);
+    assign flag = (state == FLAG);
+    assign err  = (state == ERR);
+endmodule
